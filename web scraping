@@ -1,6 +1,7 @@
+# PDF downloading
 ## Extract metadata :\\
 ## Fix forbidden errors
-## Building a program for downloading, using id
+## Building a program for downloading file PDF, using id
 import ssl
 from bs4 import BeautifulSoup
 import urllib.request
