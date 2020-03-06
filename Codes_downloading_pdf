@@ -9,32 +9,33 @@ ctx.check_hostname = False
 ctx.verify_mode = ssl.CERT_NONE
 
 session = requests.Session()
-
-webpage =session.get("https://digital.library.unt.edu/search/?t=fulltext&t1=dc_title&t2=dc_description&t3=untl_agent&t4=dc_publisher&q5=%28information+science%29&t5=dc_subject&t6=dc_coverage&t7=dc_identifier&t8=page&sort=default&searchType=advanced&fq=untl_collection%3AUNTETD&fq=untl_decade%3A2010-2019&fq=str_degree_level%3ADoctoral")
-soup = BeautifulSoup(webpage.content,'html.parser' )
-#print(soup)
-id_list = []
-for i in range (1, 25):
-  for tag in soup.find_all('a', id="result-title-"+str(i)):
-    id_list.append(tag.get("data-meta-id"))
-#print(id_list)
-
-parse_link_begin = "https://digital.library.unt.edu/ark:/67531/"
-parse_link_end = "?q=information%20science"
-
-for id in id_list:
-    link  = parse_link_begin+id+parse_link_end
-    open_link = session.get(link)
-    soup = BeautifulSoup(open_link.content, 'html.parser')
+host_url = ['https://digital.library.unt.edu/search/?t=fulltext&t1=dc_title&t2=dc_description&t3=untl_agent&t4=dc_publisher&q5=%28information%29&t5=dc_subject&nlow=2010&nhi=2020&t6=dc_coverage&t7=dc_identifier&t8=page&fq=untl_collection%3AUNTETD&fq=dc_language%3Aeng&fq=dc_type%3Atext_etd&fq=str_degree_discipline%3AInformation+Science&sort=default&searchType=advanced', 'https://digital.library.unt.edu/search/?t=fulltext&t1=dc_title&t2=dc_description&t3=untl_agent&t4=dc_publisher&q5=%28information%29&t5=dc_subject&nlow=2010&nhi=2020&t6=dc_coverage&t7=dc_identifier&t8=page&fq=untl_collection%3AUNTETD&fq=dc_language%3Aeng&fq=dc_type%3Atext_etd&fq=str_degree_discipline%3AInformation+Science&sort=default&searchType=advanced&start=24', 'https://digital.library.unt.edu/search/?t=fulltext&t1=dc_title&t2=dc_description&t3=untl_agent&t4=dc_publisher&q5=%28information%29&t5=dc_subject&nlow=2010&nhi=2020&t6=dc_coverage&t7=dc_identifier&t8=page&fq=untl_collection%3AUNTETD&fq=dc_language%3Aeng&fq=dc_type%3Atext_etd&fq=str_degree_discipline%3AInformation+Science&sort=default&searchType=advanced&start=48']
+for url in host_url:
+    webpage =session.get(url)
+    soup = BeautifulSoup(webpage.content,'html.parser' )
     #print(soup)
-    pdflink = soup.select ("a[href$='.pdf']")
-    #print(pdflink[0:2])
-    for pdf in pdflink:
-        href = pdflink[0].get("href")
-    response = session.get(href, allow_redirects=True)
-    with open('Y:\WorkingFolder_Huyen\id' + id+'.pdf', 'wb') as f:
-        f.write(response.content)
-    i+=1
-f.closed
+    id_list = []
+    for i in range (1, 25):
+      for tag in soup.find_all('a', id="result-title-"+str(i)):
+        id_list.append(tag.get("data-meta-id"))
+    #print(id_list)
+
+    parse_link_begin = "https://digital.library.unt.edu/ark:/67531/"
+    parse_link_end = "?q=information%20science"
+
+    for id in id_list:
+        link  = parse_link_begin+id+parse_link_end
+        open_link = session.get(link)
+        soup = BeautifulSoup(open_link.content, 'html.parser')
+        #print(soup)
+        pdflink = soup.select ("a[href$='.pdf']")
+        #print(pdflink[0:2])
+        for pdf in pdflink:
+            href = pdflink[0].get("href")
+        response = session.get(href, allow_redirects=True)
+        with open('Y:\WorkingFolder_Huyen\id' + id+'.pdf', 'wb') as f:
+            f.write(response.content)
+        i+=1
+    f.closed
 
 
