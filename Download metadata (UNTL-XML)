@@ -1,0 +1,39 @@
+## March29, 2020 Helen Nguyen - A completed program for downloading metadata fomartted in UNTL - XML, and  save to sharedrive with ID of dissertations
+import ssl
+from bs4 import BeautifulSoup
+import urllib.request
+import requests
+
+ctx = ssl.create_default_context()
+ctx.check_hostname = False
+ctx.verify_mode = ssl.CERT_NONE
+
+session = requests.Session()
+host_url = ['https://digital.library.unt.edu/explore/collections/UNTETD/browse/?fq=dc_type%3Atext_etd&fq=untl_decade%3A2010-2019&fq=str_degree_discipline%3AInformation+Science','https://digital.library.unt.edu/explore/collections/UNTETD/browse/?fq=dc_type%3Atext_etd&fq=untl_decade%3A2010-2019&fq=str_degree_discipline%3AInformation+Science&start=24','https://digital.library.unt.edu/explore/collections/UNTETD/browse/?fq=dc_type%3Atext_etd&fq=untl_decade%3A2010-2019&fq=str_degree_discipline%3AInformation+Science&start=48','https://digital.library.unt.edu/explore/collections/UNTETD/browse/?fq=dc_type%3Atext_etd&fq=untl_decade%3A2010-2019&fq=str_degree_discipline%3AInformation+Science&start=72', 'https://digital.library.unt.edu/explore/collections/UNTETD/browse/?fq=dc_type%3Atext_etd&fq=untl_decade%3A2010-2019&fq=str_degree_discipline%3AInformation+Science&start=96']   
+#'https://digital.library.unt.edu/explore/collections/UNTETD/browse/?fq=dc_type%3Atext_etd&fq=str_degree_discipline%3AInformation+Science&fq=untl_decade%3A2010-2019, https://digital.library.unt.edu/explore/collections/UNTETD/browse/?fq=dc_type%3Atext_etd&fq=str_degree_discipline%3AInformation+Science&fq=untl_decade%3A2010-2019&start=24, https://digital.library.unt.edu/explore/collections/UNTETD/browse/?fq=dc_type%3Atext_etd&fq=str_degree_discipline%3AInformation+Science&fq=untl_decade%3A2010-2019&start=48', 'https://digital.library.unt.edu/explore/collections/UNTETD/browse/?fq=dc_type%3Atext_etd&fq=str_degree_discipline%3AInformation+Science&fq=untl_decade%3A2010-2019&start=72, https://digital.library.unt.edu/explore/collections/UNTETD/browse/?fq=dc_type%3Atext_etd&fq=str_degree_discipline%3AInformation+Science&fq=untl_decade%3A2010-2019&start=96'] 
+for url in host_url:
+    webpage =session.get(url)
+    soup = BeautifulSoup(webpage.content,'html.parser' )
+    #print(soup)
+    id_list = []
+    for i in range (1, 25):
+      for tag in soup.find_all('a', id="result-title-"+str(i)):
+        id_list.append(tag.get("data-meta-id"))
+    #print(id_list)
+    
+    parse_link_begin = "https://digital.library.unt.edu/ark:/67531/"
+    parse_link_end = "/metadata.untl.xml"
+
+    #https://digital.library.unt.edu/ark:/67531/metadc31537/metadata.untl.xml
+    
+    for id in id_list:
+        link  = parse_link_begin+id+parse_link_end
+        response = session.get(link, allow_redirects=True)
+        #soup = BeautifulSoup(open_link.content, 'html.parser')
+        #print(soup)
+        #response = session.get(open_link, allow_redirects=True)
+        with open('Z:\WorkingFolder_Huyen\Metadata_Stored\metadata_' + id+'.xml', 'wb') as f:
+            f.write(response.content)
+        i+=1
+    f.closed
+
